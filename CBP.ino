@@ -7,7 +7,8 @@ SpeedSensor _position(PIN_ENCODER1, PIN_ENCODER2, ENCODER_HOLES, ENCODER_QUERY_I
 DCMotorServo leftMotor = DCMotorServo(_position, PIN_LEFT_DCMOTOR_DIR1, PIN_LEFT_DCMOTOR_DIR2, PIN_LEFT_DCMOTOR_PWM, true);
 DCMotorServo rightMotor = DCMotorServo(_position, PIN_RIGHT_DCMOTOR_DIR1, PIN_RIGHT_DCMOTOR_DIR2, PIN_RIGHT_DCMOTOR_PWM, false);
 
-int dcmoto_move_cm = (int) 100 * ENCODER_RATIO;
+int dcmoto_move_cm = (int) 50 * ENCODER_RATIO;
+char action = "";
 
 void setup() {
   Serial.begin(115200);
@@ -22,27 +23,78 @@ void setup() {
 }
 
 void loop() {
-
-  debug();
   
-  forward(dcmoto_move_cm);
-  //backward(dcmoto_move_cm);
-  //rotateRight();
-  //rotateLeft();
+  switch(action){
+    case 'D':
+      debug();
+      break;
+    case 'F':
+      forward(dcmoto_move_cm);
+      break;
+    case 'B':
+      backward(dcmoto_move_cm);
+      break;
+    case 'R':
+      rotateRight();
+      break;
+    case 'L':
+      rotateLeft();
+      break;
+  }
+  
+  if (Serial.available()) process_serial();
   
 }
+
+void process_serial(){
+  char cmd = Serial.read();
+  if (cmd > 'Z') cmd -= 32;
+  action = cmd;
+  switch (cmd) {
+    case 'H': help(); break;
+    case 'D': break;
+    case 'F': _position.clear();dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; break;
+    case 'B': _position.clear();dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; break;
+    case 'L': _position.clear();break;
+    case 'R': _position.clear();break;
+    case 'S': _position.clear();stopMotors(); break;
+  }
+  while (Serial.read() != 10); // dump extra characters till LF is seen (you can use CRLF or just LF)
+}
+
+void help() {
+  Serial.println(F("\nPID DC motor controller and stepper interface emulator"));
+  Serial.println(F("Available serial commands: (lines end with CRLF or LF)"));
+  Serial.println(F(""));
+  Serial.println(F("H: will print this help message again"));
+  Serial.println(F("D: will print debug information"));
+  Serial.println(F("F123: sets the target destination for the motor to 123 cm, Forward"));
+  Serial.println(F("B123: sets the target destination for the motor to 123 cm, Backward"));
+  Serial.println(F("L: sets the target destination for the motor to 90 degrees, Left"));
+  Serial.println(F("R: sets the target destination for the motor to 90 degrees, Right"));
+  Serial.println(F("S: stop the motor"));
+}
+
+
 
 void timerInterrupt(){
   _position.timerInterrupt();
 }
 
-void forward(int movement_distance_cm){
 
+void stopMotors(){
+  leftMotor.stop();
+  rightMotor.stop();
+}
+
+void forward(int movement_distance_cm){
+  //debug();
   leftMotor.moveTo(movement_distance_cm);
   if (leftMotor.finished()) {
     leftMotor.stop();
   }else{
     leftMotor.run();
+    //leftMotor.runTrapezoidal();
   }
 
   rightMotor.moveTo(movement_distance_cm);
@@ -50,6 +102,7 @@ void forward(int movement_distance_cm){
     rightMotor.stop();
   }else{
     rightMotor.run();
+    //rightMotor.runTrapezoidal();
   }
   
 }
@@ -62,7 +115,7 @@ void backward(int movement_distance_cm){
 }
 
 void rotateRight(void){
-
+  //debug();
   leftMotor.moveTo(15);
   if (leftMotor.finished()) {
     leftMotor.stop();
@@ -80,7 +133,7 @@ void rotateRight(void){
 }
 
 void rotateLeft(void){
-
+  //debug();
   leftMotor.moveTo(-15);
   if (leftMotor.finished()) {
     leftMotor.stop();
@@ -110,6 +163,11 @@ void debug(){
     Serial.println(leftMotor.getActualPosition());
     Serial.print("Right Act.Pos.:   ");
     Serial.println(rightMotor.getActualPosition());
+
+    Serial.print("Left RPM:   ");
+    Serial.println(leftMotor.getActualRPM());
+    Serial.print("Right RPM:   ");
+    Serial.println(rightMotor.getActualRPM());
     
     serial_timeout = millis() + 1000;
   }

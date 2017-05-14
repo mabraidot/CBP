@@ -25,6 +25,7 @@ class SpeedSensor
     int getRPM(bool left);
     unsigned long getSteps(bool left);
     void timerInterrupt();
+    void SpeedSensor::clear(void);
   //private:
     bool _pinState(bool left);
     int _leftPin;

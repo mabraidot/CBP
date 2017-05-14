@@ -26,18 +26,29 @@ SpeedSensor::SpeedSensor(int leftPin, int rightPin, unsigned int encoderHoles, i
   _leftSteps = _rightSteps      = 0;
 }
 
+void SpeedSensor::clear(void){
+  _leftSteps = 0;
+  _leftCounter = 0; 
+  _rightSteps = 0;
+  _rightCounter = 0; 
+}
+
 
 int SpeedSensor::getRPM(bool left)
 {
   int rpm = 0;
   if(left){
     rpm = (60 * 1000 / _encoderHoles ) / _surveyInterval * _leftCounter;
-    if(rpm <= 0){ _leftSteps = 0; }
-    _leftCounter = 0;
+    if(rpm <= 0){ 
+      //_leftSteps = 0; 
+    }
+    //_leftCounter = 0; 
   }else{
     rpm = (60 * 1000 / _encoderHoles ) / _surveyInterval * _rightCounter;
-    if(rpm <= 0){ _rightSteps = 0; }
-    _rightCounter = 0;
+    if(rpm <= 0){ 
+      //_rightSteps = 0;
+    }
+    //_rightCounter = 0; 
   }
   
   return rpm;

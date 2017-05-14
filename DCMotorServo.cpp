@@ -14,7 +14,7 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
 
   _leftMotor = leftMotor;
   
-  _PWM_output = 0;  
+  _PWM_output = 0;
   _pwm_skip = 30;
   _position_accuracy = 0;
   _position_direction = 1;
@@ -31,8 +31,9 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
 
 
 
-  /*_acceleration = 20.0;
-  _PID_speed_setpoint = 70;
+  _feed = 200;
+  _acceleration = 20.0;
+  _PID_speed_setpoint = 20;
   _PID_speed_input = 0;
   _PID_speed_output = 0;
   speedPID = new PID(&_PID_speed_input, &_PID_speed_output, &_PID_speed_setpoint,1,1,0, DIRECT);
@@ -41,7 +42,7 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
   speedPID->SetOutputLimits(-255, 255);
   //turn the PID on
   speedPID->SetMode(AUTOMATIC);
-  */
+  
 }
 
 /**
@@ -110,17 +111,37 @@ int DCMotorServo::getActualPosition()
   return _position.getSteps(_leftMotor) * _position_direction;
 }
 
+int DCMotorServo::getActualRPM()
+{
+  return _position.getRPM(_leftMotor);
+}
+
+void DCMotorServo::clearEncoder(void)
+{
+  _position.clear();
+}
+
 void DCMotorServo::run() {
 
   _PID_input = _position.getSteps(_leftMotor) * (double) _position_direction;
   myPID->Compute();
-  _PWM_output = abs(_PID_output) + _pwm_skip;
+
+  //_PWM_output = abs(_PID_output) + _pwm_skip;
+  
+  _PID_speed_setpoint = _feed;
+  _PID_speed_input = _position.getRPM(_leftMotor);
+  speedPID->Compute();
+  _PWM_output = abs(_PID_speed_output);
+
   if (abs(_PID_setpoint - _PID_input) <= _position_accuracy)
   {
     myPID->SetMode(MANUAL);
     _PID_output = 0;
     _PWM_output = 0;
     _position_direction = 1;
+
+    speedPID->SetMode(MANUAL);
+    _PID_speed_output = 0;
   }
   else
   {
@@ -131,6 +152,46 @@ void DCMotorServo::run() {
   analogWrite(_pin_PWM_output, _PWM_output);
   
 }
+
+void DCMotorServo::runTrapezoidal(void) {
+  
+  long a1 = millis();
+  _PID_input = _position.getSteps(_leftMotor) * (double) _position_direction;
+  int distance = _PID_setpoint - _PID_input;
+  boolean dirPos = _position_direction;
+  
+  float xm = _feed * _feed / _acceleration;
+  float t1, t2;
+  if (distance <= xm) t1 = t2 = sqrt(distance / _acceleration); // triangular
+  else { // trapezoidal
+    t1 = sqrt(xm / _acceleration); // t1 = end of accel
+    t2 = (distance - xm) / _feed + t1; // t2 = end of coasting
+  }
+  // Ok, I know what to do next, so let's perform the actual motion
+  float t = 0, spd = 0.0;
+  float dt = 1e-3;
+  float da = _acceleration * dt;
+  float covered = _PID_setpoint;
+  float maxt = t1 + t2;
+  while (t < maxt) {
+    t += dt;
+    if (t < t1) spd += da; else if (t >= t2) spd -= da;
+    if ( dirPos ) covered += spd * dt; else covered -= spd * dt; // calculate new target position
+    //vel =  encoder0Pos - input;
+    
+    _PID_input = _position.getSteps(_leftMotor) * (double) _position_direction;
+    _PID_setpoint = covered;
+    while(!myPID->Compute()); // espero a que termine el cálculo
+    
+    _PID_speed_setpoint = abs(_PID_output) + _pwm_skip;
+    speedPID->Compute();
+    _PWM_output = abs(_PID_speed_output);
+  
+    _pick_direction();
+    analogWrite(_pin_PWM_output, _PWM_output); 
+  }
+}
+
 
 void DCMotorServo::stop() {
   

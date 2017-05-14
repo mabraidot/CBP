@@ -14,6 +14,8 @@ public:
   void moveTo(int new_position);
   int getRequestedPosition();
   int getActualPosition();
+  int getActualRPM();
+  void DCMotorServo::clearEncoder(void);
   bool finished();
   bool setPWMSkip(uint8_t range);
   void setAccuracy(unsigned int range);
@@ -21,7 +23,7 @@ public:
   SpeedSensor & _position;
   
   void setSpeed(int new_speed);
-  void runTrapezoidal(int destination);
+  void runTrapezoidal();
   
   
 private:
@@ -37,5 +39,7 @@ private:
   void _pick_direction();
 
   float _acceleration;         // Desired acceleration in mm/s^2
+  double _feed;
+  
 };
 
