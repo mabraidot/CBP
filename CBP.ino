@@ -84,14 +84,15 @@
 
 #include <avr/io.h>  
 
-#define MOTOR_DIR 12                            // Non PWM pin for direction control
+#define MOTOR_DIR_1 12                          // Non PWM pin for direction control
+#define MOTOR_DIR_2 13                          // Non PWM pin for direction control
 #define MOTOR_PWM 11                            // PWM controlled pin.  Pin 11 must be used since we are using Timer2 for pwm control
 #define ENCODER_READ 5                          // The encoder digital output must be connected to pin 5 for Timer/Counter1
 
 unsigned int encoderPos;                        // used to track the ABSOLUTE encoder position
 unsigned long next_speed_check_time;            // keep track of the next sample measurement time  
 int encoder_end_pos;                            // the last actual encoder position sampled
-int move_error;                                 // used to account for previous move errors
+int move_error;                                                                                                                                                                                                                                                                                                        // used to account for previous move errors
 float last_ref_pos;                             // the previous reference encoder position for the PD calculation
 float last_ref_vel;                             // the previous reference velocity for the PD calculation
 int pwm = 0;                                    // motor pwm
@@ -100,24 +101,26 @@ int accel_decel_ramp;                           // the acceleration & decelerati
 int slew_distance;                              // the slew distance in samples
 float KP;                                       // position gain for the PD calculation
 float KD;                                       // derivative gain for the PD calculation
-int enc_pos_target; // the expected encoder movement during the specified move
+int enc_pos_target;                             // the expected encoder movement during the specified move
 int homing = 0;                                 // used to track if we are doing a homing move
-                                              // 0 = no homing move; 1 = doing a homing move; 2 = completed homing move
+                                                // 0 = no homing move; 1 = doing a homing move; 2 = completed homing move
 int home_count = 0;                             // used to track the number of samples of no movement for homing move
 int inByte = 0;                                 // variable to hold incoming serial data for keypress
 
 
 void setup() {  
-  Serial.begin(19200);
+  Serial.begin(115200);
 
   CLKPR=0;                                   // set the clock prescale register to 0, p. 35-36
 
   pinMode(ENCODER_READ, INPUT);              // initialize ENCODER_READ pin as an INPUT pin; used for digital encoder reads
-  pinMode(MOTOR_DIR, OUTPUT);            // initialize MOTOR_DIR pin as an OUTPUT pin; used to control the motor direction
+  pinMode(MOTOR_DIR_1, OUTPUT);            // initialize MOTOR_DIR_1 pin as an OUTPUT pin; used to control the motor direction
+  pinMode(MOTOR_DIR_2, OUTPUT);            // initialize MOTOR_DIR_2 pin as an OUTPUT pin; used to control the motor direction
   pinMode(MOTOR_PWM, OUTPUT);            // initialize MOTOR_PWM pin as an OUTPUT pin; used to control the motor pwm
 
   // initialize the OUTPUT's to a LOW value
-  digitalWrite(MOTOR_DIR, LOW);
+  digitalWrite(MOTOR_DIR_1, LOW);
+  digitalWrite(MOTOR_DIR_2, LOW);
   digitalWrite(MOTOR_PWM, LOW);
 
   // Beware:  Here there be dragons...
@@ -255,7 +258,8 @@ void motor_backward()
   Serial.println(enc_pos_target - move_error); 
   
   // Set the direction bit to the correct value
-  digitalWrite(MOTOR_DIR, HIGH);
+  digitalWrite(MOTOR_DIR_1, HIGH);
+  digitalWrite(MOTOR_DIR_2, LOW);
 
   // Set output to PWM.  Since we are using "Compare Output Mode, Phase Correct PWM Mode", table 15-4 applies, p. 153
   // See p. 147 for additional info on Phase Correct PWM Mode
@@ -320,7 +324,8 @@ void motor_forward()
   Serial.println(enc_pos_target - move_error); 
   
   // Set the direction bit to the correct value
-  digitalWrite(MOTOR_DIR, LOW);
+  digitalWrite(MOTOR_DIR_1, LOW);
+  digitalWrite(MOTOR_DIR_2, HIGH);
 
   // Since we are using "Compare Output Mode, Phase Correct PWM Mode", table 15-4 applies, p. 153
   // See p. 147 for additional info on Phase Correct PWM Mode
@@ -385,7 +390,8 @@ void motor_home()                    // homing against a hard stop
   OCR2A=0;                           // zero the pwm;  see motor_backward subroutine for the OCR2A explanation
 
   // Set the directional bit to the correct value
-  digitalWrite(MOTOR_DIR, LOW);
+  digitalWrite(MOTOR_DIR_1, LOW);
+  digitalWrite(MOTOR_DIR_2, HIGH);
 
   // Set output to PWM (same as forward move, since we always move forward for homing)
   TCCR2A |= ((1<<COM2A1) | (0<<COM2A0));
@@ -437,7 +443,8 @@ void motor_stop()
   OCR2A = 0;              // reset the pwm register to 0
 
   // Put the motor control outputs to a safe 'LOW'
-  digitalWrite(MOTOR_DIR, LOW);
+  digitalWrite(MOTOR_DIR_1, LOW);
+  digitalWrite(MOTOR_DIR_2, LOW);
   digitalWrite(MOTOR_PWM, LOW);  
 }
 
