@@ -53,11 +53,11 @@ void process_serial(){
   switch (cmd) {
     case 'H': help(); break;
     case 'D': break;
-    case 'F': _position.clear();dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; break;
-    case 'B': _position.clear();dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; break;
-    case 'L': _position.clear();break;
-    case 'R': _position.clear();break;
-    case 'S': _position.clear();stopMotors(); break;
+    case 'F': dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; break;
+    case 'B': dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; break;
+    case 'L': break;
+    case 'R': break;
+    case 'S': stopMotors(); break;
   }
   while (Serial.read() != 10); // dump extra characters till LF is seen (you can use CRLF or just LF)
 }
@@ -88,8 +88,10 @@ void stopMotors(){
 }
 
 void forward(int movement_distance_cm){
-  //debug();
+
   leftMotor.moveTo(movement_distance_cm);
+  rightMotor.moveTo(movement_distance_cm);
+
   if (leftMotor.finished()) {
     leftMotor.stop();
   }else{
@@ -97,7 +99,6 @@ void forward(int movement_distance_cm){
     //leftMotor.runTrapezoidal();
   }
 
-  rightMotor.moveTo(movement_distance_cm);
   if (rightMotor.finished()) {
     rightMotor.stop();
   }else{
@@ -115,15 +116,16 @@ void backward(int movement_distance_cm){
 }
 
 void rotateRight(void){
-  //debug();
+
   leftMotor.moveTo(15);
+  rightMotor.moveTo(-15);
+
   if (leftMotor.finished()) {
     leftMotor.stop();
   }else{
     leftMotor.run();
   }
 
-  rightMotor.moveTo(-15);
   if (rightMotor.finished()) {
     rightMotor.stop();
   }else{
@@ -133,15 +135,16 @@ void rotateRight(void){
 }
 
 void rotateLeft(void){
-  //debug();
+
   leftMotor.moveTo(-15);
+  rightMotor.moveTo(15);
+
   if (leftMotor.finished()) {
     leftMotor.stop();
   }else{
     leftMotor.run();
   }
 
-  rightMotor.moveTo(15);
   if (rightMotor.finished()) {
     rightMotor.stop();
   }else{

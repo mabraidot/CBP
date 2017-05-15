@@ -97,6 +97,9 @@ void DCMotorServo::move(int new_rela_position)
 
 void DCMotorServo::moveTo(int new_position)
 {
+  if(_PID_setpoint != new_position){
+    _position.clear();
+  }
   _PID_setpoint = new_position;
   _position_direction = _PID_setpoint/abs(_PID_setpoint);
 }
@@ -194,7 +197,9 @@ void DCMotorServo::runTrapezoidal(void) {
 
 
 void DCMotorServo::stop() {
-  
+
+  _position.clear();
+
   myPID->SetMode(MANUAL);
   _PID_output = 0;
   _PWM_output = 0;
