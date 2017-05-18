@@ -26,11 +26,14 @@ SpeedSensor::SpeedSensor(int leftPin, int rightPin, unsigned int encoderHoles, i
   _leftSteps = _rightSteps      = 0;
 }
 
-void SpeedSensor::clear(void){
-  _leftSteps = 0;
-  _leftCounter = 0; 
-  _rightSteps = 0;
-  _rightCounter = 0; 
+void SpeedSensor::clear(bool leftMotor){
+  if(leftMotor){
+    _leftSteps = 0;
+    _leftCounter = 0;
+  }else{ 
+    _rightSteps = 0;
+    _rightCounter = 0; 
+  }
 }
 
 

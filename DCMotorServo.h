@@ -6,7 +6,6 @@ class DCMotorServo {
 public:
   //DCMotorServo(SpeedSensor& Speed, uint8_t pin_dir_1 = 6, uint8_t pin_dir_2 = 7, uint8_t pin_pwm_output = 3, bool leftMotor = true): _position(Speed) {};
   DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1 = 6, uint8_t pin_dir_2 = 7, uint8_t pin_pwm_output = 3, bool leftMotor = true);
-  PID * myPID;
   PID * speedPID;
   void run();
   void stop();
@@ -15,7 +14,7 @@ public:
   int getRequestedPosition();
   int getActualPosition();
   int getActualRPM();
-  void DCMotorServo::clearEncoder(void);
+  void clearEncoder(void);
   bool finished();
   bool setPWMSkip(uint8_t range);
   void setAccuracy(unsigned int range);
@@ -38,8 +37,9 @@ private:
   int _position_direction;
   void _pick_direction();
 
-  float _acceleration;         // Desired acceleration in mm/s^2
+  //float _acceleration;         // Desired acceleration in mm/s^2
   double _feed;
+  bool _running;
   
 };
 

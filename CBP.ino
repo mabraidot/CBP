@@ -7,7 +7,7 @@ SpeedSensor _position(PIN_ENCODER1, PIN_ENCODER2, ENCODER_HOLES, ENCODER_QUERY_I
 DCMotorServo leftMotor = DCMotorServo(_position, PIN_LEFT_DCMOTOR_DIR1, PIN_LEFT_DCMOTOR_DIR2, PIN_LEFT_DCMOTOR_PWM, true);
 DCMotorServo rightMotor = DCMotorServo(_position, PIN_RIGHT_DCMOTOR_DIR1, PIN_RIGHT_DCMOTOR_DIR2, PIN_RIGHT_DCMOTOR_PWM, false);
 
-int dcmoto_move_cm = (int) 50 * ENCODER_RATIO;
+int dcmoto_move_cm = (int) 10 * ENCODER_RATIO;
 char action = "";
 
 void setup() {
@@ -18,11 +18,15 @@ void setup() {
   //Tune the servo feedback
   //Determined by trial and error
   //leftMotor.myPID->SetTunings(0.1,0.15,0.05);
-  leftMotor.myPID->SetTunings(4.01,5.99,0.01);
-  rightMotor.myPID->SetTunings(4.01,5.99,0.01);
+  
+  //leftMotor.myPID->SetTunings(4.01,5.99,0.01);
+  //rightMotor.myPID->SetTunings(4.01,5.99,0.01);
 }
 
 void loop() {
+
+  //forward(dcmoto_move_cm);
+  //debug();
   
   switch(action){
     case 'D':
