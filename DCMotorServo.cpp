@@ -84,6 +84,9 @@ bool DCMotorServo::finished()
 
 void DCMotorServo::move(int new_rela_position)
 {
+
+  new_rela_position = new_rela_position * ENCODER_RATIO;
+  
   //use _PID_setpoint so that we don't introduce errors of _position_accuracy
   _PID_setpoint = _PID_setpoint + new_rela_position;
   _position_direction = _PID_setpoint/abs(_PID_setpoint);
@@ -92,6 +95,8 @@ void DCMotorServo::move(int new_rela_position)
 
 void DCMotorServo::moveTo(int new_position)
 {
+  new_position = new_position * ENCODER_RATIO;
+  
   if(_PID_setpoint != new_position){
     _position.clear(_leftMotor);
     _PID_setpoint = new_position;

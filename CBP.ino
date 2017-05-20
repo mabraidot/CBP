@@ -9,7 +9,7 @@ DCMotorServo leftMotor = DCMotorServo(_position, PIN_LEFT_DCMOTOR_DIR1, PIN_LEFT
 DCMotorServo rightMotor = DCMotorServo(_position, PIN_RIGHT_DCMOTOR_DIR1, PIN_RIGHT_DCMOTOR_DIR2, PIN_RIGHT_DCMOTOR_PWM, false);
 Planner plan = Planner();
 
-int dcmoto_move_cm = (int) 10 * ENCODER_RATIO;
+int dcmoto_move_cm = 0;
 char action = "";
 
 void setup() {
@@ -17,17 +17,34 @@ void setup() {
   Timer1.initialize(50);
   Timer1.attachInterrupt( timerInterrupt );
 
-  //Tune the servo feedback
-  //Determined by trial and error
-  //leftMotor.myPID->SetTunings(0.1,0.15,0.05);
+  int sampleTime = 50;
+  leftMotor.speedPID->SetSampleTime(sampleTime);
+  rightMotor.speedPID->SetSampleTime(sampleTime);
   
-  //leftMotor.myPID->SetTunings(4.01,5.99,0.01);
-  //rightMotor.myPID->SetTunings(4.01,5.99,0.01);
+  float kP = 1;
+  float kI = 0.5;
+  float kD = 9;
+  
+  /*float kP = 0.8;
+  float kI = 0.8;
+  float kD = 0;
+  */
+  leftMotor.speedPID->SetTunings(kP,kI,kD);
+  rightMotor.speedPID->SetTunings(kP,kI,kD);
+
+  // TEST: a little choreography at the beginning
+  plan.put(100,100);
+  plan.put(ENCODER_TURN_CM,-ENCODER_TURN_CM);
+  plan.put(20,20);
+  plan.put(-ENCODER_TURN_CM,ENCODER_TURN_CM);
+  plan.put(-20,-20);
   
 }
 
 void loop() {
 
+  //debug();
+  
   switch(action){
     case 'D':
       debug();
@@ -60,6 +77,7 @@ void loop() {
     // Si ambos motores terminaron el comando, liberar el planner 
     // para poder tomar otro comando
     if (leftMotor.finished() && rightMotor.finished()) {
+      delay(1000);
       plan.next();
     }
   }
@@ -83,10 +101,10 @@ void process_serial(){
   switch (cmd) {
     case 'H': help(); break;
     case 'D': break;
-    case 'F': dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; plan.put(dcmoto_move_cm, dcmoto_move_cm); break;
-    case 'B': dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO * -1; plan.put(dcmoto_move_cm, dcmoto_move_cm); break;
-    case 'L': plan.put(-15, 15); break;
-    case 'R': plan.put(15, -15); break;
+    case 'F': dcmoto_move_cm = Serial.parseInt(); plan.put(dcmoto_move_cm, dcmoto_move_cm); break;
+    case 'B': dcmoto_move_cm = Serial.parseInt() * -1; plan.put(dcmoto_move_cm, dcmoto_move_cm); break;
+    case 'L': plan.put(-ENCODER_TURN_CM, ENCODER_TURN_CM); break;
+    case 'R': plan.put(ENCODER_TURN_CM, -ENCODER_TURN_CM); break;
     case 'S': stopMotors(); break;
   }
   

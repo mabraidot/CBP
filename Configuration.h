@@ -3,7 +3,8 @@
 #define PIN_ENCODER2              13  // Right
 // Encoder resolution
 #define ENCODER_HOLES             14
-#define ENCODER_RATIO             ENCODER_HOLES / 26
+#define ENCODER_RATIO             ENCODER_HOLES / 25
+#define ENCODER_TURN_CM           11  // set xx cms and -xx cms on both wheels to turn 90 degrees
 #define ENCODER_QUERY_INTERVAL    500 // milliseconds
 
 // Left DC Motor

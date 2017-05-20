@@ -1,3 +1,4 @@
+#include "Configuration.h"
 #include <PID_v1.h>
 #include "SpeedSensor.h"
 
