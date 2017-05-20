@@ -52,6 +52,11 @@ void loop() {
   }
   
   if (Serial.available()) process_serial();
+  process_plan();
+  
+}
+
+void process_plan(){
 
   /** 
    * si hay comandos en la queue (plan.count > 0) 
@@ -93,6 +98,7 @@ void loop() {
   }
   
 }
+
 
 void process_serial(){
   char cmd = Serial.read();

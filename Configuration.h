@@ -9,8 +9,8 @@
 
 // Left DC Motor
 #define PIN_LEFT_DCMOTOR_DIR1     4
-#define PIN_LEFT_DCMOTOR_DIR2     5
-#define PIN_LEFT_DCMOTOR_PWM      3
+#define PIN_LEFT_DCMOTOR_DIR2     3
+#define PIN_LEFT_DCMOTOR_PWM      5
 
 // Right DC Motor
 #define PIN_RIGHT_DCMOTOR_DIR1    7
