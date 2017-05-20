@@ -1,11 +1,13 @@
 #include "Configuration.h"
 #include "DCMotorServo.h"
 #include "SpeedSensor.h"
+#include "Planner.h"
 
 SpeedSensor _position(PIN_ENCODER1, PIN_ENCODER2, ENCODER_HOLES, ENCODER_QUERY_INTERVAL);
 
 DCMotorServo leftMotor = DCMotorServo(_position, PIN_LEFT_DCMOTOR_DIR1, PIN_LEFT_DCMOTOR_DIR2, PIN_LEFT_DCMOTOR_PWM, true);
 DCMotorServo rightMotor = DCMotorServo(_position, PIN_RIGHT_DCMOTOR_DIR1, PIN_RIGHT_DCMOTOR_DIR2, PIN_RIGHT_DCMOTOR_PWM, false);
+Planner plan = Planner();
 
 int dcmoto_move_cm = (int) 10 * ENCODER_RATIO;
 char action = "";
@@ -21,32 +23,56 @@ void setup() {
   
   //leftMotor.myPID->SetTunings(4.01,5.99,0.01);
   //rightMotor.myPID->SetTunings(4.01,5.99,0.01);
+  
 }
 
 void loop() {
 
-  //forward(dcmoto_move_cm);
-  //debug();
-  
   switch(action){
     case 'D':
       debug();
       break;
-    case 'F':
-      forward(dcmoto_move_cm);
-      break;
-    case 'B':
-      backward(dcmoto_move_cm);
-      break;
-    case 'R':
-      rotateRight();
-      break;
-    case 'L':
-      rotateLeft();
-      break;
   }
   
   if (Serial.available()) process_serial();
+
+  /** 
+   * si hay comandos en la queue (plan.count > 0) 
+   * leer el comando de la tail
+   * si no esta ocupado (plan.busy = true)
+   * setear el moveto del motor
+   * fin si
+   * resto del bloque de control del motor stop/run
+   * si el motor termino
+   * mover la tail del buffer al siguiente comando
+   * fin si
+   * fin si hay comandos en la queue
+   */
+  if(!plan.isEmpty()){
+    Planner::bufferRing bufferRing = plan.get();
+    
+    // Si devolvió un comando válido y lo puso en ocupado
+    if(bufferRing.busy){
+      leftMotor.moveTo(bufferRing.leftPosition);
+      rightMotor.moveTo(bufferRing.rightPosition);
+    }
+    
+    // Si ambos motores terminaron el comando, liberar el planner 
+    // para poder tomar otro comando
+    if (leftMotor.finished() && rightMotor.finished()) {
+      plan.next();
+    }
+  }
+  if (leftMotor.finished()) {
+    leftMotor.stop();
+  }else{
+    leftMotor.run();
+  }
+  if (rightMotor.finished()) {
+    rightMotor.stop();
+  }else{
+    rightMotor.run();
+  }
   
 }
 
@@ -57,13 +83,16 @@ void process_serial(){
   switch (cmd) {
     case 'H': help(); break;
     case 'D': break;
-    case 'F': dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; break;
-    case 'B': dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; break;
-    case 'L': break;
-    case 'R': break;
+    case 'F': dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO; plan.put(dcmoto_move_cm, dcmoto_move_cm); break;
+    case 'B': dcmoto_move_cm = Serial.parseInt() * ENCODER_RATIO * -1; plan.put(dcmoto_move_cm, dcmoto_move_cm); break;
+    case 'L': plan.put(-15, 15); break;
+    case 'R': plan.put(15, -15); break;
     case 'S': stopMotors(); break;
   }
+  
   while (Serial.read() != 10); // dump extra characters till LF is seen (you can use CRLF or just LF)
+
+  
 }
 
 void help() {
@@ -175,6 +204,14 @@ void debug(){
     Serial.println(leftMotor.getActualRPM());
     Serial.print("Right RPM:   ");
     Serial.println(rightMotor.getActualRPM());
+
+    Serial.print("count: ");
+    Serial.println(plan.count);
+    Serial.print("head: ");
+    Serial.println(plan.head);
+    Serial.print("tail: ");
+    Serial.println(plan.tail);
+
     
     serial_timeout = millis() + 1000;
   }

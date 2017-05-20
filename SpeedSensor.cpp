@@ -10,7 +10,6 @@
  * TimerOne: https://code.google.com/archive/p/arduino-timerone/downloads
  */
  
-#include "Arduino.h"
 #include "SpeedSensor.h"
 
 

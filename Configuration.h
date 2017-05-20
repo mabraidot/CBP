@@ -16,3 +16,5 @@
 #define PIN_RIGHT_DCMOTOR_DIR2    8
 #define PIN_RIGHT_DCMOTOR_PWM     6
 
+// Planner - Ring Buffer Pattern
+#define RING_BUFFER_SIZE          256
