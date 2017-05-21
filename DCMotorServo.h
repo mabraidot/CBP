@@ -39,7 +39,6 @@ private:
   void _pick_direction();
 
   //float _acceleration;         // Desired acceleration in mm/s^2
-  double _feed;
   bool _running;
   
 };

@@ -25,15 +25,15 @@ void setup() {
   float kI = 0.5;
   float kD = 9;
   
-  /*float kP = 0.8;
-  float kI = 0.8;
-  float kD = 0;
+  /*float kP = 1;
+  float kI = 0.1;
+  float kD = 9;
   */
   leftMotor.speedPID->SetTunings(kP,kI,kD);
   rightMotor.speedPID->SetTunings(kP,kI,kD);
-
+  
   // TEST: a little choreography at the beginning
-  plan.put(100,100);
+  plan.put(90,90);
   plan.put(ENCODER_TURN_CM,-ENCODER_TURN_CM);
   plan.put(20,20);
   plan.put(-ENCODER_TURN_CM,ENCODER_TURN_CM);
@@ -143,73 +143,6 @@ void stopMotors(){
   leftMotor.stop();
   rightMotor.stop();
 }
-
-void forward(int movement_distance_cm){
-
-  leftMotor.moveTo(movement_distance_cm);
-  rightMotor.moveTo(movement_distance_cm);
-
-  if (leftMotor.finished()) {
-    leftMotor.stop();
-  }else{
-    leftMotor.run();
-    //leftMotor.runTrapezoidal();
-  }
-
-  if (rightMotor.finished()) {
-    rightMotor.stop();
-  }else{
-    rightMotor.run();
-    //rightMotor.runTrapezoidal();
-  }
-  
-}
-
-void backward(int movement_distance_cm){
-  
-  movement_distance_cm = -1 * movement_distance_cm;
-  forward(movement_distance_cm);
-  
-}
-
-void rotateRight(void){
-
-  leftMotor.moveTo(15);
-  rightMotor.moveTo(-15);
-
-  if (leftMotor.finished()) {
-    leftMotor.stop();
-  }else{
-    leftMotor.run();
-  }
-
-  if (rightMotor.finished()) {
-    rightMotor.stop();
-  }else{
-    rightMotor.run();
-  }
-  
-}
-
-void rotateLeft(void){
-
-  leftMotor.moveTo(-15);
-  rightMotor.moveTo(15);
-
-  if (leftMotor.finished()) {
-    leftMotor.stop();
-  }else{
-    leftMotor.run();
-  }
-
-  if (rightMotor.finished()) {
-    rightMotor.stop();
-  }else{
-    rightMotor.run();
-  }
-  
-}
-
 
 void debug(){
   

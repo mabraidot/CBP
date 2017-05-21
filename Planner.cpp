@@ -6,8 +6,8 @@ Planner::Planner(void)
   typedef struct
   {
     bool busy;
-    char leftPosition;
-    char rightPosition;
+    int leftPosition;
+    int rightPosition;
   } bufferRing;
 
   bufferRing bufferQueue[RING_BUFFER_SIZE];
@@ -65,7 +65,7 @@ Planner::bufferRing Planner::get()
   return c;
 }
 
-void Planner::put(const char leftPosition, const char rightPosition)
+void Planner::put(int leftPosition, int rightPosition)
 {
   if(count < RING_BUFFER_SIZE){
     bufferQueue[head].leftPosition = leftPosition;

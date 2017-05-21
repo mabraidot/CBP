@@ -23,17 +23,14 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
   _PID_output = 0;
   _PID_setpoint = 0;
   
-  _feed = 255; // 0 - 255
-  
   //_acceleration = 20.0;
-  _PID_speed_setpoint = 0;
+  _PID_speed_setpoint = 500; //RPM
   _PID_speed_input = 0;
   _PID_speed_output = 0;
   speedPID = new PID(&_PID_speed_input, &_PID_speed_output, &_PID_speed_setpoint,1,1,0, DIRECT);
 
   speedPID->SetSampleTime(50);
-  //speedPID->SetOutputLimits(-255, 255);
-  speedPID->SetOutputLimits(0, 255);
+  speedPID->SetOutputLimits(0, 255); // Max RPM
   //turn the PID on
   speedPID->SetMode(MANUAL);
   _running = false;
@@ -97,7 +94,7 @@ void DCMotorServo::move(int new_rela_position)
 
 void DCMotorServo::moveTo(int new_position)
 {
-  new_position = new_position * ENCODER_RATIO;
+  new_position = (double) new_position * ENCODER_RATIO;
   
   if(_PID_setpoint != new_position){
     _position.clear(_leftMotor);
@@ -128,12 +125,12 @@ void DCMotorServo::clearEncoder(void)
 
 void DCMotorServo::run() {
 
-  _PID_input = _position.getSteps(_leftMotor) * (double) _position_direction;
+  _PID_input = (double)  _position.getSteps(_leftMotor) * _position_direction;
 
-  _PID_speed_setpoint = _feed;
-  _PID_speed_input = _position.getRPM(_leftMotor) * (100/255);
+  _PID_speed_input = (double) _position.getRPM(_leftMotor);
+
   speedPID->Compute();
-  _PWM_output = abs(_PID_speed_output);
+  _PWM_output = (int) abs(_PID_speed_output);
 
   if (abs(_PID_setpoint - _PID_input) <= _position_accuracy)
   {
@@ -201,7 +198,6 @@ void DCMotorServo::stop() {
   _PID_setpoint = 0;
   _position_direction = 1;
 
-  _PID_speed_setpoint = 0;
   _PID_speed_input = 0;
   _PID_speed_output = 0;
 

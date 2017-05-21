@@ -7,8 +7,8 @@ class Planner
     typedef struct
     {
       bool busy;
-      char leftPosition;
-      char rightPosition;
+      int leftPosition;
+      int rightPosition;
     } bufferRing;
     
     Planner(void);
@@ -18,7 +18,7 @@ class Planner
     int         isFull  (void);
     bufferRing  get     (void);
     void        next    (void);
-    void        put     (const char leftPosition, const char rightPosition);
+    void        put     (int leftPosition, int rightPosition);
 
   //private:
     bufferRing bufferQueue[RING_BUFFER_SIZE];
