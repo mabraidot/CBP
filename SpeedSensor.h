@@ -36,6 +36,7 @@ class SpeedSensor
     unsigned long _rightSteps;
     unsigned int _encoderHoles;
     int _surveyInterval;
+    int _rmpInterval;
     
 };
 

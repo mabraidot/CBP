@@ -33,9 +33,9 @@ void setup() {
   rightMotor.speedPID->SetTunings(kP,kI,kD);
   
   // TEST: a little choreography at the beginning
-  plan.put(90,90);
+  plan.put(120,120);
   plan.put(ENCODER_TURN_CM,-ENCODER_TURN_CM);
-  plan.put(20,20);
+  plan.put(30,30);
   plan.put(-ENCODER_TURN_CM,ENCODER_TURN_CM);
   plan.put(-20,-20);
   

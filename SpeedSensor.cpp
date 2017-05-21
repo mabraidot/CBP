@@ -20,6 +20,7 @@ SpeedSensor::SpeedSensor(int leftPin, int rightPin, unsigned int encoderHoles, i
   _rightPin         = rightPin;
   _encoderHoles     = encoderHoles;
   _surveyInterval   = surveyInterval;
+  _rmpInterval      = 4000;
 
   _leftCounter = _rightCounter  = 0;
   _leftSteps = _rightSteps      = 0;
@@ -80,6 +81,14 @@ bool SpeedSensor::_pinState(bool left){
 
 void SpeedSensor::timerInterrupt()
 {
+  
+  static unsigned long rpm_timeout = millis() + _rmpInterval;
+  if(rpm_timeout < millis()){
+    _leftCounter = 0;
+    _rightCounter = 0;
+    rpm_timeout = millis() + _rmpInterval;
+  }
+  
   // Left side
   static uint16_t stateL = 0; // current debounce status
   stateL = (stateL << 1) | !_pinState(1) | 0xe0000;
