@@ -18,19 +18,19 @@ void setup() {
   Timer1.attachInterrupt( timerInterrupt );
 
   int sampleTime = 50;
-  leftMotor.speedPID->SetSampleTime(sampleTime);
-  rightMotor.speedPID->SetSampleTime(sampleTime);
+  leftMotor.posPID->SetSampleTime(sampleTime);
+  rightMotor.posPID->SetSampleTime(sampleTime);
   
-  float kP = 1;
-  float kI = 0.5;
-  float kD = 9;
+  float kP = 4;
+  float kI = 70;
+  float kD = 1;
   
-  /*float kP = 1;
-  float kI = 0.1;
-  float kD = 9;
+  /*float kP = 100;
+  float kI = 10;
+  float kD = 1;
   */
-  leftMotor.speedPID->SetTunings(kP,kI,kD);
-  rightMotor.speedPID->SetTunings(kP,kI,kD);
+  leftMotor.posPID->SetTunings(kP,kI,kD);
+  rightMotor.posPID->SetTunings(kP,kI,kD);
   
   // TEST: a little choreography at the beginning
   plan.put(120,120);
@@ -42,8 +42,6 @@ void setup() {
 }
 
 void loop() {
-
-  //debug();
   
   switch(action){
     case 'D':
@@ -58,6 +56,10 @@ void loop() {
 
 void process_plan(){
 
+  /*leftMotor.freeRun(247);
+  rightMotor.freeRun(255);
+  return;
+  */
   /** 
    * si hay comandos en la queue (plan.count > 0) 
    * leer el comando de la tail
@@ -86,6 +88,7 @@ void process_plan(){
       plan.next();
     }
   }
+  
   if (leftMotor.finished()) {
     leftMotor.stop();
   }else{

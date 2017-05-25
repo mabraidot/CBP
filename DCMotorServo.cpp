@@ -22,8 +22,19 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
   _PID_input = 0;
   _PID_output = 0;
   _PID_setpoint = 0;
+  posPID = new PID(&_PID_input, &_PID_output, &_PID_setpoint,1,1,0, DIRECT);
+  posPID->SetSampleTime(50);
+
+  // Max PWM value
+  if(leftMotor){
+    posPID->SetOutputLimits((-1 * LEFT_DCMOTOR_MAX_PWM), LEFT_DCMOTOR_MAX_PWM);
+  }else{
+    posPID->SetOutputLimits((-1 * RIGHT_DCMOTOR_MAX_PWM), RIGHT_DCMOTOR_MAX_PWM);
+  }
+  //turn the PID on
+  posPID->SetMode(MANUAL);
   
-  //_acceleration = 20.0;
+  /*
   _PID_speed_setpoint = 500; //RPM
   _PID_speed_input = 0;
   _PID_speed_output = 0;
@@ -33,6 +44,8 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
   speedPID->SetOutputLimits(0, 255); // Max RPM
   //turn the PID on
   speedPID->SetMode(MANUAL);
+  */
+
   _running = false;
   
 }
@@ -40,10 +53,10 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
 /**
  * SPEED
  */
-void DCMotorServo::setSpeed(int new_speed)
+/*void DCMotorServo::setSpeed(int new_speed)
 {
   _PID_speed_setpoint = new_speed;
-}
+}*/
 
 
 
@@ -123,14 +136,21 @@ void DCMotorServo::clearEncoder(void)
   _position.clear(_leftMotor);
 }
 
+
+void DCMotorServo::freeRun(int speedPWM) {
+  _pick_direction();
+  analogWrite(_pin_PWM_output, speedPWM);
+}
+
 void DCMotorServo::run() {
 
-  _PID_input = (double)  _position.getSteps(_leftMotor) * _position_direction;
+  _PID_input = (double) _position.getSteps(_leftMotor) * _position_direction;
+  //_PID_speed_input = (double) _position.getRPM(_leftMotor);
 
-  _PID_speed_input = (double) _position.getRPM(_leftMotor);
-
-  speedPID->Compute();
-  _PWM_output = (int) abs(_PID_speed_output);
+  //speedPID->Compute();
+  posPID->Compute();
+  //_PWM_output = (int) abs(_PID_speed_output);
+  _PWM_output = (int) abs(_PID_output);
 
   if (abs(_PID_setpoint - _PID_input) <= _position_accuracy)
   {
@@ -139,7 +159,8 @@ void DCMotorServo::run() {
   else
   {
     _running = true;
-    speedPID->SetMode(AUTOMATIC);
+    //speedPID->SetMode(AUTOMATIC);
+    posPID->SetMode(AUTOMATIC);
   }
 
   _pick_direction();
@@ -189,7 +210,8 @@ void DCMotorServo::run() {
 
 void DCMotorServo::stop() {
 
-  speedPID->SetMode(MANUAL);
+  //speedPID->SetMode(MANUAL);
+  posPID->SetMode(MANUAL);
   _running = false;
   
   _PID_input = 0;
@@ -198,8 +220,8 @@ void DCMotorServo::stop() {
   _PID_setpoint = 0;
   _position_direction = 1;
 
-  _PID_speed_input = 0;
-  _PID_speed_output = 0;
+  //_PID_speed_input = 0;
+  //_PID_speed_output = 0;
 
   analogWrite(_pin_PWM_output, 0);
   digitalWrite(_pin_dir_1, LOW);

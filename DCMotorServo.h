@@ -7,7 +7,8 @@ class DCMotorServo {
 public:
   //DCMotorServo(SpeedSensor& Speed, uint8_t pin_dir_1 = 6, uint8_t pin_dir_2 = 7, uint8_t pin_pwm_output = 3, bool leftMotor = true): _position(Speed) {};
   DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1 = 6, uint8_t pin_dir_2 = 7, uint8_t pin_pwm_output = 3, bool leftMotor = true);
-  PID * speedPID;
+  //PID * speedPID;
+  PID * posPID;
   void run();
   void stop();
   void move(int new_rela_position);
@@ -22,14 +23,15 @@ public:
   void setCurrentPosition(int new_position);
   SpeedSensor & _position;
   
-  void setSpeed(int new_speed);
-  void runTrapezoidal();
+  //void setSpeed(int new_speed);
+  //void runTrapezoidal();
+  void freeRun(int speedPWM);
   
   
 private:
   uint8_t _pin_PWM_output, _pin_dir_1, _pin_dir_2;
   double _PID_setpoint, _PID_input, _PID_output;
-  double _PID_speed_setpoint, _PID_speed_input, _PID_speed_output;
+  //double _PID_speed_setpoint, _PID_speed_input, _PID_speed_output;
   uint8_t _PWM_output;
   
   bool _leftMotor;
@@ -38,7 +40,6 @@ private:
   int _position_direction;
   void _pick_direction();
 
-  //float _acceleration;         // Desired acceleration in mm/s^2
   bool _running;
   
 };

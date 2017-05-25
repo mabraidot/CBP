@@ -82,12 +82,12 @@ bool SpeedSensor::_pinState(bool left){
 void SpeedSensor::timerInterrupt()
 {
   
-  static unsigned long rpm_timeout = millis() + _rmpInterval;
+  /*static unsigned long rpm_timeout = millis() + _rmpInterval;
   if(rpm_timeout < millis()){
     _leftCounter = 0;
     _rightCounter = 0;
     rpm_timeout = millis() + _rmpInterval;
-  }
+  }*/
   
   // Left side
   static uint16_t stateL = 0; // current debounce status
