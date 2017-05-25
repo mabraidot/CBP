@@ -24,7 +24,6 @@ public:
   SpeedSensor & _position;
   
   //void setSpeed(int new_speed);
-  //void runTrapezoidal();
   void freeRun(int speedPWM);
   
   
@@ -39,8 +38,6 @@ private:
   uint8_t _position_accuracy;   // Set to the highest tolerable inaccuracy (units are encoder counts)
   int _position_direction;
   void _pick_direction();
-
-  bool _running;
   
 };
 

@@ -45,8 +45,6 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
   //turn the PID on
   speedPID->SetMode(MANUAL);
   */
-
-  _running = false;
   
 }
 
@@ -87,8 +85,7 @@ bool DCMotorServo::setPWMSkip(uint8_t range)
 
 bool DCMotorServo::finished()
 {
-  //if (abs(_PID_setpoint - _PID_input) <= _position_accuracy && _PWM_output == 0)
-  if (abs(_PID_setpoint - _PID_input) <= _position_accuracy && !_running)
+  if (abs(_PID_setpoint - _PID_input) <= _position_accuracy && _PWM_output == 0)
     return 1;
   return 0;
  
@@ -158,7 +155,6 @@ void DCMotorServo::run() {
   }
   else
   {
-    _running = true;
     //speedPID->SetMode(AUTOMATIC);
     posPID->SetMode(AUTOMATIC);
   }
@@ -168,51 +164,10 @@ void DCMotorServo::run() {
   
 }
 
-/*void DCMotorServo::runTrapezoidal(void) {
-  
-  long a1 = millis();
-  _PID_input = _position.getSteps(_leftMotor) * (double) _position_direction;
-  int distance = _PID_setpoint - _PID_input;
-  boolean dirPos = _position_direction;
-  
-  float xm = _feed * _feed / _acceleration;
-  float t1, t2;
-  if (distance <= xm) t1 = t2 = sqrt(distance / _acceleration); // triangular
-  else { // trapezoidal
-    t1 = sqrt(xm / _acceleration); // t1 = end of accel
-    t2 = (distance - xm) / _feed + t1; // t2 = end of coasting
-  }
-  // Ok, I know what to do next, so let's perform the actual motion
-  float t = 0, spd = 0.0;
-  float dt = 1e-3;
-  float da = _acceleration * dt;
-  float covered = _PID_setpoint;
-  float maxt = t1 + t2;
-  while (t < maxt) {
-    t += dt;
-    if (t < t1) spd += da; else if (t >= t2) spd -= da;
-    if ( dirPos ) covered += spd * dt; else covered -= spd * dt; // calculate new target position
-    //vel =  encoder0Pos - input;
-    
-    _PID_input = _position.getSteps(_leftMotor) * (double) _position_direction;
-    _PID_setpoint = covered;
-    while(!myPID->Compute()); // espero a que termine el cálculo
-    
-    _PID_speed_setpoint = abs(_PID_output) + _pwm_skip;
-    speedPID->Compute();
-    _PWM_output = abs(_PID_speed_output);
-  
-    _pick_direction();
-    analogWrite(_pin_PWM_output, _PWM_output); 
-  }
-}
-*/
-
 void DCMotorServo::stop() {
 
   //speedPID->SetMode(MANUAL);
   posPID->SetMode(MANUAL);
-  _running = false;
   
   _PID_input = 0;
   _PID_output = 0;
