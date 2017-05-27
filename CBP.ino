@@ -8,9 +8,10 @@ SpeedSensor _position(PIN_ENCODER1, PIN_ENCODER2, ENCODER_HOLES, ENCODER_QUERY_I
 DCMotorServo leftMotor = DCMotorServo(_position, PIN_LEFT_DCMOTOR_DIR1, PIN_LEFT_DCMOTOR_DIR2, PIN_LEFT_DCMOTOR_PWM, true);
 DCMotorServo rightMotor = DCMotorServo(_position, PIN_RIGHT_DCMOTOR_DIR1, PIN_RIGHT_DCMOTOR_DIR2, PIN_RIGHT_DCMOTOR_PWM, false);
 Planner plan = Planner();
+Planner::bufferRing bufferRing;
 
 int dcmoto_move_cm = 0;
-char action = "";
+char action;
 
 void setup() {
   Serial.begin(115200);
@@ -73,7 +74,7 @@ void process_plan(){
    * fin si hay comandos en la queue
    */
   if(!plan.isEmpty()){
-    Planner::bufferRing bufferRing = plan.get();
+    bufferRing = plan.get();
     
     // Si devolvió un comando válido y lo puso en ocupado
     if(bufferRing.busy){
