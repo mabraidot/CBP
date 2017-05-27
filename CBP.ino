@@ -74,7 +74,7 @@ void process_plan(){
    * fin si hay comandos en la queue
    */
   if(!plan.isEmpty()){
-    bufferRing = plan.get();
+	  bufferRing = plan.get();
     
     // Si devolvió un comando válido y lo puso en ocupado
     if(bufferRing.busy){
