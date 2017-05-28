@@ -11,13 +11,13 @@
 #define PIN_LEFT_DCMOTOR_DIR1     4
 #define PIN_LEFT_DCMOTOR_DIR2     3
 #define PIN_LEFT_DCMOTOR_PWM      5
-#define LEFT_DCMOTOR_MAX_PWM      245
+#define LEFT_DCMOTOR_MAX_PWM      245 // 245
 
 // Right DC Motor
 #define PIN_RIGHT_DCMOTOR_DIR1    7
 #define PIN_RIGHT_DCMOTOR_DIR2    8
 #define PIN_RIGHT_DCMOTOR_PWM     6
-#define RIGHT_DCMOTOR_MAX_PWM     255
+#define RIGHT_DCMOTOR_MAX_PWM     255 // 255
 
 // Planner - Ring Buffer Pattern
 #define RING_BUFFER_SIZE          256

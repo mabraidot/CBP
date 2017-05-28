@@ -166,9 +166,21 @@ void DCMotorServo::run() {
 
 void DCMotorServo::stop() {
 
+  if(_PWM_output > 0){
+    analogWrite(_pin_PWM_output, 255);
+    if (_position_direction < 0){
+      digitalWrite(_pin_dir_1, HIGH);
+      digitalWrite(_pin_dir_2, LOW);
+    }else{
+      digitalWrite(_pin_dir_1, LOW);
+      digitalWrite(_pin_dir_2, HIGH);
+    }
+    delay(50);
+  }
+  
   //speedPID->SetMode(MANUAL);
   posPID->SetMode(MANUAL);
-  
+
   _PID_input = 0;
   _PID_output = 0;
   _PWM_output = 0;
@@ -183,7 +195,7 @@ void DCMotorServo::stop() {
   digitalWrite(_pin_dir_2, LOW);
 
   _position.clear(_leftMotor);
-
+  
 }
 
 void DCMotorServo::_pick_direction() {
