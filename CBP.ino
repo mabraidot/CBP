@@ -2,6 +2,7 @@
 #include "DCMotorServo.h"
 #include "SpeedSensor.h"
 #include "Planner.h"
+#include <NewPing.h>
 
 SpeedSensor _position(PIN_ENCODER1, PIN_ENCODER2, ENCODER_HOLES, ENCODER_QUERY_INTERVAL);
 
@@ -12,6 +13,11 @@ Planner::bufferRing bufferRing;
 
 int dcmoto_move_cm = 0;
 char action;
+char free_run = 0;
+
+NewPing sonar(PIN_SONAR_TRIGGER, PIN_SONAR_ECHO, SONAR_MAX_DISTANCE);
+char sonar_distance = 0;
+char sonar_busy = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -34,12 +40,12 @@ void setup() {
   rightMotor.posPID->SetTunings(kP,kI,kD);
   
   // TEST: a little choreography at the beginning
-  plan.put(120,120);
+  /*plan.put(120,120);
   plan.put(ENCODER_TURN_CM,-ENCODER_TURN_CM);
   plan.put(30,30);
   plan.put(-ENCODER_TURN_CM,ENCODER_TURN_CM);
   plan.put(-20,-20);
-  
+  */
 }
 
 void loop() {
@@ -51,16 +57,37 @@ void loop() {
   }
   
   if (Serial.available()) process_serial();
+
+  free_run = 1;
+  process_obstacles();
   process_plan();
   
 }
 
+void process_obstacles(){
+
+  static unsigned long sonar_timeout = millis() + 500;
+  if(sonar_timeout < millis()){
+    sonar_distance = sonar.ping_cm();
+    
+    if(sonar_distance > 0 && sonar_distance <= SONAR_MIN_DISTANCE && !sonar_busy){
+      sonar_busy = 1;
+      stopMotors();
+      plan.init(true);
+      plan.put(ENCODER_TURN_CM,-ENCODER_TURN_CM);
+      delay(500);
+      
+    }else if(sonar_distance == 0 || sonar_distance > SONAR_MIN_DISTANCE || plan.isEmpty()){
+      sonar_busy = 0;
+    }
+    
+    sonar_timeout = millis() + 500;
+  }
+}
+
+
 void process_plan(){
 
-  /*leftMotor.freeRun(247);
-  rightMotor.freeRun(255);
-  return;
-  */
   /** 
    * si hay comandos en la queue (plan.count > 0) 
    * leer el comando de la tail
@@ -88,6 +115,10 @@ void process_plan(){
       delay(1000);
       plan.next();
     }
+  }else if(free_run){
+    leftMotor.freeRun(0);
+    rightMotor.freeRun(0);
+    return;
   }
   
   if (leftMotor.finished()) {
@@ -161,11 +192,15 @@ void debug(){
     Serial.print("Right Act.Pos.:   ");
     Serial.println(rightMotor.getActualPosition());
 
+    /*
+    Serial.println("------------------------------------------------");
     Serial.print("Left RPM:   ");
     Serial.println(leftMotor.getActualRPM());
     Serial.print("Right RPM:   ");
     Serial.println(rightMotor.getActualRPM());
-
+    */
+    
+    Serial.println("------------------------------------------------");
     Serial.print("count: ");
     Serial.println(plan.count);
     Serial.print("head: ");
@@ -173,6 +208,10 @@ void debug(){
     Serial.print("tail: ");
     Serial.println(plan.tail);
 
+    Serial.println("------------------------------------------------");
+    Serial.print("Sonar: ");
+    Serial.print(sonar.ping_cm());
+    Serial.println(" cm");
     
     serial_timeout = millis() + 1000;
   }

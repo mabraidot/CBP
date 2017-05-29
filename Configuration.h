@@ -21,3 +21,10 @@
 
 // Planner - Ring Buffer Pattern
 #define RING_BUFFER_SIZE          256
+
+// Ultrasonic Sensor
+#define PIN_SONAR_TRIGGER         11
+#define PIN_SONAR_ECHO            12
+#define SONAR_MAX_DISTANCE        40
+#define SONAR_MIN_DISTANCE        10
+

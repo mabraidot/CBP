@@ -136,7 +136,18 @@ void DCMotorServo::clearEncoder(void)
 
 void DCMotorServo::freeRun(int speedPWM) {
   _pick_direction();
-  analogWrite(_pin_PWM_output, speedPWM);
+  if(speedPWM > 0){
+    analogWrite(_pin_PWM_output, speedPWM);
+    _PWM_output = speedPWM;
+  }else{
+    if(_leftMotor){
+      analogWrite(_pin_PWM_output, LEFT_DCMOTOR_MAX_PWM);
+      _PWM_output = LEFT_DCMOTOR_MAX_PWM;
+    }else{
+      analogWrite(_pin_PWM_output, RIGHT_DCMOTOR_MAX_PWM);
+      _PWM_output = RIGHT_DCMOTOR_MAX_PWM;
+    }
+  }
 }
 
 void DCMotorServo::run() {
