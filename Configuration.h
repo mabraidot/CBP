@@ -4,14 +4,14 @@
 // Encoder resolution
 #define ENCODER_HOLES             14
 #define ENCODER_RATIO             ENCODER_HOLES / 26
-#define ENCODER_TURN_CM           15  // set xx cms and -xx cms on both wheels to turn 90 degrees
+#define ENCODER_TURN_CM           14  // set xx cms and -xx cms on both wheels to turn 90 degrees
 #define ENCODER_QUERY_INTERVAL    500 // milliseconds
 
 // Left DC Motor
 #define PIN_LEFT_DCMOTOR_DIR1     4
 #define PIN_LEFT_DCMOTOR_DIR2     3
 #define PIN_LEFT_DCMOTOR_PWM      5
-#define LEFT_DCMOTOR_MAX_PWM      252
+#define LEFT_DCMOTOR_MAX_PWM      250
 
 // Right DC Motor
 #define PIN_RIGHT_DCMOTOR_DIR1    7
@@ -26,5 +26,5 @@
 #define PIN_SONAR_TRIGGER         11
 #define PIN_SONAR_ECHO            12
 #define SONAR_MAX_DISTANCE        40
-#define SONAR_MIN_DISTANCE        10
+#define SONAR_MIN_DISTANCE        20
 
