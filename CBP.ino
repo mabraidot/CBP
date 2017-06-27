@@ -18,6 +18,7 @@ char free_run = 0;
 NewPing sonar(PIN_SONAR_TRIGGER, PIN_SONAR_ECHO, SONAR_MAX_DISTANCE);
 char sonar_distance = 0;
 char sonar_busy = 0;
+char sonar_query_interval = 200;
 
 void setup() {
   Serial.begin(115200);
@@ -31,10 +32,10 @@ void setup() {
   float kP = 4;
   float kI = 70;
   float kD = 1;
-  
-  /*float kP = 100;
+  /*
+  float kP = 4;
   float kI = 10;
-  float kD = 1;
+  float kD = 10;
   */
   leftMotor.posPID->SetTunings(kP,kI,kD);
   rightMotor.posPID->SetTunings(kP,kI,kD);
@@ -66,7 +67,8 @@ void loop() {
 
 void process_obstacles(){
 
-  static unsigned long sonar_timeout = millis() + 500;
+  static unsigned long sonar_timeout = 200;
+  //static unsigned long sonar_timeout = millis() + sonar_query_interval;
   if(sonar_timeout < millis()){
     sonar_distance = sonar.ping_cm();
     
@@ -75,13 +77,13 @@ void process_obstacles(){
       stopMotors();
       plan.init(true);
       plan.put(ENCODER_TURN_CM,-ENCODER_TURN_CM);
-      delay(500);
+      delay(100);
       
     }else if(sonar_distance == 0 || sonar_distance > SONAR_MIN_DISTANCE || plan.isEmpty()){
       sonar_busy = 0;
     }
     
-    sonar_timeout = millis() + 500;
+    sonar_timeout = millis() + sonar_query_interval;
   }
 }
 

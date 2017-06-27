@@ -177,6 +177,7 @@ void DCMotorServo::run() {
 
 void DCMotorServo::stop() {
 
+  /*
   if(_PWM_output > 0){
     analogWrite(_pin_PWM_output, 255);
     if (_position_direction < 0){
@@ -188,6 +189,7 @@ void DCMotorServo::stop() {
     }
     delay(50);
   }
+  */
   
   //speedPID->SetMode(MANUAL);
   posPID->SetMode(MANUAL);
