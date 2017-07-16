@@ -29,13 +29,13 @@ void setup() {
   leftMotor.posPID->SetSampleTime(sampleTime);
   rightMotor.posPID->SetSampleTime(sampleTime);
   
+  float kP = 0.04;
+  float kI = 10;
+  float kD = 0.01;
+  /*
   float kP = 4;
   float kI = 70;
   float kD = 1;
-  /*
-  float kP = 4;
-  float kI = 10;
-  float kD = 10;
   */
   leftMotor.posPID->SetTunings(kP,kI,kD);
   rightMotor.posPID->SetTunings(kP,kI,kD);
@@ -67,8 +67,7 @@ void loop() {
 
 void process_obstacles(){
 
-  static unsigned long sonar_timeout = 200;
-  //static unsigned long sonar_timeout = millis() + sonar_query_interval;
+  static unsigned long sonar_timeout = millis() + sonar_query_interval;
   if(sonar_timeout < millis()){
     sonar_distance = sonar.ping_cm();
     
@@ -77,7 +76,7 @@ void process_obstacles(){
       stopMotors();
       plan.init(true);
       plan.put(ENCODER_TURN_CM,-ENCODER_TURN_CM);
-      delay(100);
+      delay(200);
       
     }else if(sonar_distance == 0 || sonar_distance > SONAR_MIN_DISTANCE || plan.isEmpty()){
       sonar_busy = 0;
@@ -182,9 +181,25 @@ void stopMotors(){
 }
 
 void debug(){
-  
-  static unsigned long serial_timeout = millis() + 1000;
+
+  static int serial_interval = 1000;
+  static double sensorLeft = 0;
+  static double sensorRight = 0;
+  static unsigned long serial_timeout = millis() + serial_interval;
   if(serial_timeout < millis()){
+    
+    /*
+    Serial.println("------------------------------------------------");
+    Serial.print("Left Current sensing:    ");
+    sensorLeft = leftMotor.getCurrentSenseValue();
+    Serial.println(sensorLeft);
+    
+    Serial.print("Right Current sensing:    ");
+    sensorRight = rightMotor.getCurrentSenseValue();
+    Serial.println(sensorRight);
+    */
+    
+    /*Serial.println("------------------------------------------------");
     Serial.print("Left Destino:    ");
     Serial.println(leftMotor.getRequestedPosition());
     Serial.print("Right Destino:    ");
@@ -194,14 +209,6 @@ void debug(){
     Serial.print("Right Act.Pos.:   ");
     Serial.println(rightMotor.getActualPosition());
 
-    /*
-    Serial.println("------------------------------------------------");
-    Serial.print("Left RPM:   ");
-    Serial.println(leftMotor.getActualRPM());
-    Serial.print("Right RPM:   ");
-    Serial.println(rightMotor.getActualRPM());
-    */
-    
     Serial.println("------------------------------------------------");
     Serial.print("count: ");
     Serial.println(plan.count);
@@ -214,8 +221,17 @@ void debug(){
     Serial.print("Sonar: ");
     Serial.print(sonar.ping_cm());
     Serial.println(" cm");
+    */
+
     
-    serial_timeout = millis() + 1000;
+    Serial.println("------------------------------------------------");
+    Serial.print("Left RPM:   ");
+    Serial.println(leftMotor.getActualRPM());
+    Serial.print("Right RPM:   ");
+    Serial.println(rightMotor.getActualRPM());
+    
+    
+    serial_timeout = millis() + serial_interval;
   }
 }
 

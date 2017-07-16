@@ -21,6 +21,7 @@ public:
   bool setPWMSkip(uint8_t range);
   void setAccuracy(unsigned int range);
   void setCurrentPosition(int new_position);
+  double getCurrentSenseValue();
   SpeedSensor & _position;
   
   //void setSpeed(int new_speed);

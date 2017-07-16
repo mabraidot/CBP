@@ -22,7 +22,7 @@ SpeedSensor::SpeedSensor(int leftPin, int rightPin, unsigned int encoderHoles, i
   _surveyInterval   = surveyInterval;
   _rmpInterval      = 4000;
 
-  _leftCounter = _rightCounter  = 0;
+  _leftCounterRPM = _leftCounter = _rightCounterRPM = _rightCounter  = 0;
   _leftSteps = _rightSteps      = 0;
 }
 
@@ -41,17 +41,11 @@ int SpeedSensor::getRPM(bool left)
 {
   int rpm = 0;
   if(left){
-    rpm = (60 * 1000 / _encoderHoles ) / _surveyInterval * _leftCounter;
-    if(rpm <= 0){ 
-      //_leftSteps = 0; 
-    }
-    //_leftCounter = 0; 
+    rpm = (60 * 1000 / _encoderHoles ) / _surveyInterval * _leftCounterRPM;
+    _leftCounterRPM = 0; 
   }else{
-    rpm = (60 * 1000 / _encoderHoles ) / _surveyInterval * _rightCounter;
-    if(rpm <= 0){ 
-      //_rightSteps = 0;
-    }
-    //_rightCounter = 0; 
+    rpm = (60 * 1000 / _encoderHoles ) / _surveyInterval * _rightCounterRPM;
+    _rightCounterRPM = 0; 
   }
   
   return rpm;
@@ -93,6 +87,7 @@ void SpeedSensor::timerInterrupt()
   static uint16_t stateL = 0; // current debounce status
   stateL = (stateL << 1) | !_pinState(1) | 0xe0000;
   if(stateL == 0xf000){
+    _leftCounterRPM++;  // increase +1 the rpm counter value
     _leftCounter++;  // increase +1 the counter value
     _leftSteps++;   // increase steps for shaft position
   }
@@ -101,6 +96,7 @@ void SpeedSensor::timerInterrupt()
   static uint16_t stateR = 0;
   stateR = (stateR << 1) | !_pinState(0) | 0xe0000;
   if(stateR == 0xf000){
+    _rightCounterRPM++;  // increase +1 the rpm counter value
     _rightCounter++;
     _rightSteps++;
   }

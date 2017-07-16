@@ -29,9 +29,11 @@ class SpeedSensor
   //private:
     bool _pinState(bool left);
     int _leftPin;
+    unsigned int _leftCounterRPM;
     unsigned int _leftCounter;
     unsigned long _leftSteps;
     int _rightPin;
+    unsigned int _rightCounterRPM;
     unsigned int _rightCounter;
     unsigned long _rightSteps;
     unsigned int _encoderHoles;

@@ -12,6 +12,13 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
   pinMode(_pin_dir_2, OUTPUT);
   pinMode(_pin_PWM_output, OUTPUT);
 
+  // Current sensing pins
+  if(leftMotor){
+    pinMode(PIN_LEFT_CURRENT_SENSE, INPUT);
+  }else{
+    pinMode(PIN_RIGHT_CURRENT_SENSE, INPUT);
+  }
+
   _leftMotor = leftMotor;
   
   _PWM_output = 0;
@@ -55,6 +62,19 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
 {
   _PID_speed_setpoint = new_speed;
 }*/
+
+
+/**
+ * CURRENT SENSING
+ */
+double DCMotorServo::getCurrentSenseValue()
+{
+  if(_leftMotor){
+    return (double) analogRead(PIN_LEFT_CURRENT_SENSE)/1024*5/0.5;
+  }else{
+    return (double) analogRead(PIN_RIGHT_CURRENT_SENSE)/1024*5/0.5;
+  }
+}
 
 
 
@@ -135,20 +155,25 @@ void DCMotorServo::clearEncoder(void)
 
 
 void DCMotorServo::freeRun(int speedPWM) {
+
   _pick_direction();
-  if(speedPWM > 0){
-    analogWrite(_pin_PWM_output, speedPWM);
-    _PWM_output = speedPWM;
-  }else{
-    if(_leftMotor){
-      analogWrite(_pin_PWM_output, LEFT_DCMOTOR_MAX_PWM);
-      _PWM_output = LEFT_DCMOTOR_MAX_PWM;
-    }else{
-      analogWrite(_pin_PWM_output, RIGHT_DCMOTOR_MAX_PWM);
-      _PWM_output = RIGHT_DCMOTOR_MAX_PWM;
-    }
+  
+  _PID_setpoint = (speedPWM > 0) ? speedPWM : 300; //RPM
+  _PID_input = (double) _position.getRPM(_leftMotor);
+  posPID->Compute();
+  _PWM_output = (int) abs(_PID_output);
+  
+  posPID->SetMode(AUTOMATIC);
+
+  double current_sensing_value = getCurrentSenseValue();
+  if(current_sensing_value > CURRENT_LIMIT){
+    _PWM_output = _PWM_output * (CURRENT_LIMIT/current_sensing_value);
   }
+
+  analogWrite(_pin_PWM_output, _PWM_output);
+
 }
+
 
 void DCMotorServo::run() {
 
