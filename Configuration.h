@@ -7,7 +7,7 @@
 #define ENCODER_TURN_CM           14  // set xx cms and -xx cms on both wheels to turn 90 degrees
 #define ENCODER_QUERY_INTERVAL    500 // milliseconds
 
-#define CURRENT_LIMIT             0.1
+#define CURRENT_LIMIT             1
 
 // Left DC Motor
 #define PIN_LEFT_CURRENT_SENSE    A0

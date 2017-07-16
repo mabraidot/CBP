@@ -18,7 +18,7 @@ char free_run = 0;
 NewPing sonar(PIN_SONAR_TRIGGER, PIN_SONAR_ECHO, SONAR_MAX_DISTANCE);
 char sonar_distance = 0;
 char sonar_busy = 0;
-char sonar_query_interval = 200;
+//unsigned int sonar_query_interval = 200;
 
 void setup() {
   Serial.begin(115200);
@@ -67,6 +67,7 @@ void loop() {
 
 void process_obstacles(){
 
+  static unsigned int sonar_query_interval = 50;
   static unsigned long sonar_timeout = millis() + sonar_query_interval;
   if(sonar_timeout < millis()){
     sonar_distance = sonar.ping_cm();
@@ -181,25 +182,21 @@ void stopMotors(){
 }
 
 void debug(){
-
+  /*
   static int serial_interval = 1000;
-  static double sensorLeft = 0;
-  static double sensorRight = 0;
   static unsigned long serial_timeout = millis() + serial_interval;
   if(serial_timeout < millis()){
     
-    /*
+    
     Serial.println("------------------------------------------------");
     Serial.print("Left Current sensing:    ");
-    sensorLeft = leftMotor.getCurrentSenseValue();
-    Serial.println(sensorLeft);
+    Serial.println(leftMotor.getCurrentSenseValue());
     
     Serial.print("Right Current sensing:    ");
-    sensorRight = rightMotor.getCurrentSenseValue();
-    Serial.println(sensorRight);
-    */
+    Serial.println(rightMotor.getCurrentSenseValue());
     
-    /*Serial.println("------------------------------------------------");
+    
+    Serial.println("------------------------------------------------");
     Serial.print("Left Destino:    ");
     Serial.println(leftMotor.getRequestedPosition());
     Serial.print("Right Destino:    ");
@@ -221,7 +218,7 @@ void debug(){
     Serial.print("Sonar: ");
     Serial.print(sonar.ping_cm());
     Serial.println(" cm");
-    */
+    
 
     
     Serial.println("------------------------------------------------");
@@ -233,5 +230,6 @@ void debug(){
     
     serial_timeout = millis() + serial_interval;
   }
+  */
 }
 

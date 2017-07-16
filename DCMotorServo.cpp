@@ -165,10 +165,10 @@ void DCMotorServo::freeRun(int speedPWM) {
   
   posPID->SetMode(AUTOMATIC);
 
-  double current_sensing_value = getCurrentSenseValue();
+  /*double current_sensing_value = getCurrentSenseValue();
   if(current_sensing_value > CURRENT_LIMIT){
     _PWM_output = _PWM_output * (CURRENT_LIMIT/current_sensing_value);
-  }
+  }*/
 
   analogWrite(_pin_PWM_output, _PWM_output);
 
