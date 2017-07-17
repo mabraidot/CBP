@@ -40,6 +40,9 @@ DCMotorServo::DCMotorServo(SpeedSensor &Speed, uint8_t pin_dir_1, uint8_t pin_di
   }
   //turn the PID on
   posPID->SetMode(MANUAL);
+
+
+  _sigmoid_time = 0;
   
   /*
   _PID_speed_setpoint = 500; //RPM
@@ -156,22 +159,19 @@ void DCMotorServo::clearEncoder(void)
 
 void DCMotorServo::freeRun(int speedPWM) {
 
-  _pick_direction();
+  //Sigmoid function: f(x) = 1 / (1 + exp(-x))
+  float sigmoid = 1 / (1 + exp(-0.01 * ((float) _sigmoid_time - 150)));
+  _PWM_output = (int) min((sigmoid * 256), 255);
   
-  _PID_setpoint = (speedPWM > 0) ? speedPWM : 300; //RPM
-  _PID_input = (double) _position.getRPM(_leftMotor);
-  posPID->Compute();
-  _PWM_output = (int) abs(_PID_output);
-  
-  posPID->SetMode(AUTOMATIC);
-
-  /*double current_sensing_value = getCurrentSenseValue();
-  if(current_sensing_value > CURRENT_LIMIT){
-    _PWM_output = _PWM_output * (CURRENT_LIMIT/current_sensing_value);
+  /*if(_sigmoid_time<1500){
+    Serial.print(_sigmoid_time);
+    Serial.print("  -  ");
+    Serial.println(_PWM_output);
   }*/
-
+  _pick_direction();
   analogWrite(_pin_PWM_output, _PWM_output);
-
+  _sigmoid_time++;
+  
 }
 
 
@@ -224,6 +224,7 @@ void DCMotorServo::stop() {
   _PWM_output = 0;
   _PID_setpoint = 0;
   _position_direction = 1;
+  _sigmoid_time = 0;
 
   //_PID_speed_input = 0;
   //_PID_speed_output = 0;

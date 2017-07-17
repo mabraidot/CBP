@@ -39,6 +39,8 @@ private:
   uint8_t _position_accuracy;   // Set to the highest tolerable inaccuracy (units are encoder counts)
   int _position_direction;
   void _pick_direction();
+
+  unsigned long _sigmoid_time;  // X variable of the sigmoid function
   
 };
 
