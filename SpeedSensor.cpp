@@ -20,35 +20,30 @@ SpeedSensor::SpeedSensor(int leftPin, int rightPin, unsigned int encoderHoles, i
   _rightPin         = rightPin;
   _encoderHoles     = encoderHoles;
   _surveyInterval   = surveyInterval;
-  _rmpInterval      = 4000;
-
-  _leftCounterRPM = _leftCounter = _rightCounterRPM = _rightCounter  = 0;
+  
+  _leftRPM = _rightRPM = 0;
+  _leftCounterRPM = _rightCounterRPM = 0;
   _leftSteps = _rightSteps      = 0;
 }
 
 void SpeedSensor::clear(bool leftMotor){
   if(leftMotor){
     _leftSteps = 0;
-    _leftCounter = 0;
+    _leftCounterRPM = 0;
   }else{ 
     _rightSteps = 0;
-    _rightCounter = 0; 
+    _rightCounterRPM = 0; 
   }
 }
 
 
 int SpeedSensor::getRPM(bool left)
 {
-  int rpm = 0;
   if(left){
-    rpm = (60 * 1000 / _encoderHoles ) / _surveyInterval * _leftCounterRPM;
-    _leftCounterRPM = 0; 
+    return _leftRPM;
   }else{
-    rpm = (60 * 1000 / _encoderHoles ) / _surveyInterval * _rightCounterRPM;
-    _rightCounterRPM = 0; 
+    return _rightRPM;
   }
-  
-  return rpm;
 }
 
 
@@ -76,19 +71,20 @@ bool SpeedSensor::_pinState(bool left){
 void SpeedSensor::timerInterrupt()
 {
   
-  /*static unsigned long rpm_timeout = millis() + _rmpInterval;
+  static unsigned long rpm_timeout = millis() + _surveyInterval;
   if(rpm_timeout < millis()){
-    _leftCounter = 0;
-    _rightCounter = 0;
-    rpm_timeout = millis() + _rmpInterval;
-  }*/
+    _leftRPM = (60 * 1000 / _encoderHoles ) / _surveyInterval * _leftCounterRPM;
+    _leftCounterRPM = 0; 
+    _rightRPM = (60 * 1000 / _encoderHoles ) / _surveyInterval * _rightCounterRPM;
+    _rightCounterRPM = 0; 
+    rpm_timeout = millis() + _surveyInterval;
+  }
   
   // Left side
   static uint16_t stateL = 0; // current debounce status
   stateL = (stateL << 1) | !_pinState(1) | 0xe0000;
   if(stateL == 0xf000){
     _leftCounterRPM++;  // increase +1 the rpm counter value
-    _leftCounter++;  // increase +1 the counter value
     _leftSteps++;   // increase steps for shaft position
   }
   
@@ -96,8 +92,7 @@ void SpeedSensor::timerInterrupt()
   static uint16_t stateR = 0;
   stateR = (stateR << 1) | !_pinState(0) | 0xe0000;
   if(stateR == 0xf000){
-    _rightCounterRPM++;  // increase +1 the rpm counter value
-    _rightCounter++;
+    _rightCounterRPM++;
     _rightSteps++;
   }
   

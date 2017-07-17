@@ -182,12 +182,12 @@ void stopMotors(){
 }
 
 void debug(){
-  /*
+  
   static int serial_interval = 1000;
   static unsigned long serial_timeout = millis() + serial_interval;
   if(serial_timeout < millis()){
     
-    
+    /*
     Serial.println("------------------------------------------------");
     Serial.print("Left Current sensing:    ");
     Serial.println(leftMotor.getCurrentSenseValue());
@@ -218,7 +218,7 @@ void debug(){
     Serial.print("Sonar: ");
     Serial.print(sonar.ping_cm());
     Serial.println(" cm");
-    
+    */
 
     
     Serial.println("------------------------------------------------");
@@ -230,6 +230,6 @@ void debug(){
     
     serial_timeout = millis() + serial_interval;
   }
-  */
+  
 }
 

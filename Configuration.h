@@ -1,11 +1,12 @@
 // Encoders
-#define PIN_ENCODER1              2   // Left
-#define PIN_ENCODER2              13  // Right
+#define PIN_ENCODER1              2         // Left
+#define PIN_ENCODER2              13        // Right
 // Encoder resolution
-#define ENCODER_HOLES             30
-#define ENCODER_RATIO             ENCODER_HOLES / 5 // motor gear ratio = 1:5
-#define ENCODER_TURN_CM           14  // set xx cms and -xx cms on both wheels to turn 90 degrees
-#define ENCODER_QUERY_INTERVAL    500 // milliseconds
+#define ENCODER_HOLES             30 * 5    // Motor gear ratio = 1:5
+#define ENCODER_WHEEL_CIRCLE      25        // Wheel circumference
+#define ENCODER_RATIO             ENCODER_HOLES / ENCODER_WHEEL_CIRCLE // , wheel circumference = 25 cm
+#define ENCODER_TURN_CM           14        // set xx cms and -xx cms on both wheels to turn 90 degrees
+#define ENCODER_QUERY_INTERVAL    200       // Interval in milliseconds for RPM calculations
 
 #define CURRENT_LIMIT             1
 
