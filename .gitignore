@@ -1,2 +1,13 @@
+.gitignore
+.git/
 .idea/
+Libraries/
+
 cmake-build-debug/
+.vs/
+__vm/
+Debug/
+_config.yml
+CBP.sln
+CBP.vcxproj
+CBP.vcxproj.filters
