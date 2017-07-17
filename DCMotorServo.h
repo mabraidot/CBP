@@ -23,7 +23,8 @@ public:
   void setCurrentPosition(int new_position);
   double getCurrentSenseValue();
   SpeedSensor & _position;
-  
+
+  float getSigmoidValue(void);
   //void setSpeed(int new_speed);
   void freeRun(int speedPWM);
   

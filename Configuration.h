@@ -5,7 +5,7 @@
 #define ENCODER_HOLES             30 * 5    // Motor gear ratio = 1:5
 #define ENCODER_WHEEL_CIRCLE      25        // Wheel circumference
 #define ENCODER_RATIO             ENCODER_HOLES / ENCODER_WHEEL_CIRCLE // , wheel circumference = 25 cm
-#define ENCODER_TURN_CM           14        // set xx cms and -xx cms on both wheels to turn 90 degrees
+#define ENCODER_TURN_CM           12        // set xx cms and -xx cms on both wheels to turn 90 degrees
 #define ENCODER_QUERY_INTERVAL    200       // Interval in milliseconds for RPM calculations
 
 #define CURRENT_LIMIT             1
@@ -22,7 +22,7 @@
 #define PIN_RIGHT_DCMOTOR_DIR1    7
 #define PIN_RIGHT_DCMOTOR_DIR2    8
 #define PIN_RIGHT_DCMOTOR_PWM     6
-#define RIGHT_DCMOTOR_MAX_PWM     250
+#define RIGHT_DCMOTOR_MAX_PWM     252
 
 // Planner - Ring Buffer Pattern
 #define RING_BUFFER_SIZE          256

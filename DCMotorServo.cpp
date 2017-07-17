@@ -156,21 +156,36 @@ void DCMotorServo::clearEncoder(void)
   _position.clear(_leftMotor);
 }
 
+float DCMotorServo::getSigmoidValue(void){
+
+  //Sigmoid function: f(x) = 1 / (1 + exp(-x))
+  
+  float sigmoid = 1 / (1 + exp(-0.005 * ((float) _sigmoid_time - 350)));
+  _sigmoid_time++;
+
+  return sigmoid;
+  
+}
+
 
 void DCMotorServo::freeRun(int speedPWM) {
 
-  //Sigmoid function: f(x) = 1 / (1 + exp(-x))
-  float sigmoid = 1 / (1 + exp(-0.01 * ((float) _sigmoid_time - 150)));
-  _PWM_output = (int) min((sigmoid * 256), 255);
+  float sigmoid = getSigmoidValue();
+
+  int max_rpm = 0;
+  int max_motor_rpm = 0;
+  if(_leftMotor){
+    max_rpm = LEFT_DCMOTOR_MAX_PWM + 1;
+    max_motor_rpm = LEFT_DCMOTOR_MAX_PWM;
+  }else{
+    max_rpm = RIGHT_DCMOTOR_MAX_PWM + 1;
+    max_motor_rpm = RIGHT_DCMOTOR_MAX_PWM;
+  }
   
-  /*if(_sigmoid_time<1500){
-    Serial.print(_sigmoid_time);
-    Serial.print("  -  ");
-    Serial.println(_PWM_output);
-  }*/
+  _PWM_output = (int) min((sigmoid * max_rpm), max_motor_rpm);
+  
   _pick_direction();
   analogWrite(_pin_PWM_output, _PWM_output);
-  _sigmoid_time++;
   
 }
 
@@ -196,6 +211,20 @@ void DCMotorServo::run() {
   }
 
   _pick_direction();
+
+
+  float sigmoid = getSigmoidValue();
+  /*int max_rpm = 0;
+  int max_motor_rpm = 0;
+  if(_leftMotor){
+    max_rpm = LEFT_DCMOTOR_MAX_PWM + 1;
+    max_motor_rpm = LEFT_DCMOTOR_MAX_PWM;
+  }else{
+    max_rpm = RIGHT_DCMOTOR_MAX_PWM + 1;
+    max_motor_rpm = RIGHT_DCMOTOR_MAX_PWM;
+  }*/
+  _PWM_output = (int) min((sigmoid * (_PWM_output+1)), _PWM_output);
+  
   analogWrite(_pin_PWM_output, _PWM_output);
   
 }

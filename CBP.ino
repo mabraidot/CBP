@@ -218,7 +218,7 @@ void debug(){
     Serial.print("Sonar: ");
     Serial.print(sonar.ping_cm());
     Serial.println(" cm");
-    */
+    
 
     
     Serial.println("------------------------------------------------");
@@ -226,7 +226,7 @@ void debug(){
     Serial.println(leftMotor.getActualRPM());
     Serial.print("Right RPM:   ");
     Serial.println(rightMotor.getActualRPM());
-    
+    */  
     
     serial_timeout = millis() + serial_interval;
   }
