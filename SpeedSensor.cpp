@@ -82,7 +82,7 @@ void SpeedSensor::timerInterrupt()
   
   // Left side
   static uint16_t stateL = 0; // current debounce status
-  stateL = (stateL << 1) | !_pinState(1) | 0xe0000;
+  stateL = (stateL << 1) | !_pinState(1) | 0xe0000; /// @TODO: Son 3 ceros (0xe000)!! http://www.embedded.com/electronics-blogs/break-points/4024981/My-favorite-software-debouncers
   if(stateL == 0xf000){
     _leftCounterRPM++;  // increase +1 the rpm counter value
     _leftSteps++;   // increase steps for shaft position
