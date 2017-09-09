@@ -48,7 +48,8 @@
                 "C:\\Users\\Miguel\\Documents\\Arduino\\libraries\\NewPing",
                 "C:\\Users\\Miguel\\Documents\\Arduino\\libraries\\TimerOne",
                 "${workspaceRoot}",
-                "C:\\Program Files (x86)\\Arduino\\libraries",
+                "C:\\Program Files\\mingw-w64\\x86_64-7.1.0-posix-seh-rt_v5-rev0\\mingw64\\x86_64-w64-mingw32\\include",
+                "C:\\Program Files\\mingw-w64\\x86_64-7.1.0-posix-seh-rt_v5-rev0\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\7.1.0\\include",
                 "C:\\Users\\Miguel\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\cores\\arduino"
             ],
             "defines": [
@@ -61,11 +62,10 @@
                     "C:/Program Files (x86)/Windows Kits/8.1/Include/um",
                     "C:/Program Files (x86)/Windows Kits/8.1/Include/shared",
                     "C:/Program Files (x86)/Windows Kits/8.1/Include/winrt",
-                    "C:\\Users\\Miguel\\Documents\\Arduino\\libraries\\PID",
-                    "C:\\Users\\Miguel\\Documents\\Arduino\\libraries\\NewPing",
-                    "C:\\Users\\Miguel\\Documents\\Arduino\\libraries\\TimerOne",
+                    "C:\\Users\\Miguel\\Documents\\Arduino\\libraries",
                     "${workspaceRoot}",
                     "C:\\Program Files (x86)\\Arduino\\libraries",
+                    "C:\\Program Files\\mingw-w64",
                     "C:\\Users\\Miguel\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\cores\\arduino"
                 ],
                 "limitSymbolsToIncludedHeaders": false,
